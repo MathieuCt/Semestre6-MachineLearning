@@ -3,8 +3,7 @@ from sklearn.datasets import load_iris
 from Part1 import *
 
 
-
-def padas1_2():
+def pandas():
     DF = pd.DataFrame()
     T = np.array([[10, 11], [20, 21]])
     DF2 = pd.DataFrame(T)
@@ -79,52 +78,43 @@ def Explore_IrisData():
     print(len(iris["feature_names"]))
     print(np.bincount(iris["target"]))
     print(iris["target"])
+    print("data :")
+    print(iris["data"])
+    plt.hist(iris["data"])
+    plt.show()
 
 
 def part2ex2():
     iris = load_iris()
-    df = pd.DataFrame(iris.data, columns=iris.feature_names)
-    fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+    # df = pd.DataFrame(iris.data, columns=iris.feature_names)
+    # fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+    # create an hist plot for each feature
+    for i in range(4):
+        plt.hist(iris["data"][:, i], bins=30)
+        plt.title(iris["feature_names"][i])
+        plt.show()
 
 
-    }
-    '''
-    # df = iris
-    print(df.head())
-    # type of variable
-    print(df.dtypes)
-    # print available columns information
-    print("-----------------")
-    print(df.keys())
-    print("-----------------")
-    print(iris['target_names'])
-    print("-----------------")
-    print(iris.target_names)
-    print("-----------------")
-    # print the number of lines in a dataset
-    print(iris['data'].shape[0])
-    print("-----------------")
-    # print the number of columns in a dataset
-    print(iris['data'].shape[1])
-    print("-----------------")
-    # Name of the columns
-    print(iris['feature_names'])
-    print("-----------------")
-    # Les labels de chaque classe sont donnés par l’attribut "target". Afficher la taille de
-    # chaque dimension de l’attribut target. Afficher les labels des différentes observations.
-    print(iris['target'].shape)
-'''
+def affiche_scatter():
+    iris = load_iris()
+    for i in range(4):
+        for j in range(4):
+            plt.scatter(iris["data"][:, i], iris["data"][:, j], c=iris["target"])
+            plt.title(iris["feature_names"][i] + " vs " + iris["feature_names"][j])
+            plt.show()
 
 
 if __name__ == '__main__':
-    #ex1_2_3()
+    # ex1_2_3()
     # ex4()
     # ex5()
     # dataVisu()
     # pandas1_2()
     # pandas3()
     # Explore_IrisData()
-    part2ex2()
+    # part2ex2()
+    affiche_scatter()
+    
 
 
 
