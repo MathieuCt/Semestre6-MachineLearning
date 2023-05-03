@@ -19,12 +19,11 @@ def part1():
         shuffle=True,
         random_state=11,  # A préciser pour retrouver le même
         # ensemble de point à chaque exécution
-
-        print(data)
+    )
+    print(data)
     # display clusters
     plt.scatter(data[0][:, 0], data[0][:, 1], c=data[1])
     plt.show()
-    )
 def distEuc1(M, Tab):
     return np.sqrt(np.sum((M - Tab)**2, axis = 1))
 
@@ -40,7 +39,7 @@ print(centroids)
 
 #5
 def assign_centroid(data, centroids):
-    n_observations = data.shape[0]
+    n_observations = data.shape[0]  
     print(n_observations)
     centroid_assign = []
     centroid_distance = []
