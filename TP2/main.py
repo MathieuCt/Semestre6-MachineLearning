@@ -45,6 +45,7 @@ dfB = pd.DataFrame(data[0], columns=['x', 'y'])
 # Display data frame
 # print(dfB)
 
+
 def DistEucl(M,Tab):
     '''
     Compute the euclidean distance between a point and the centroids
@@ -59,6 +60,7 @@ def DistEucl(M,Tab):
         dist.append(np.sqrt(sum))
     return dist
 
+
 def Initialize_centroids(k,data):
     '''
     Initialize the centroids
@@ -67,6 +69,7 @@ def Initialize_centroids(k,data):
     centroids = data.sample(n=k,random_state=11 ).values
     centroids = pd.DataFrame(centroids, columns = data.columns)
     return centroids
+
 
 def assign_centroid(data, centroids):
     '''
@@ -83,6 +86,7 @@ def assign_centroid(data, centroids):
 
     return (centroid_assign,centroid_distance)
 
+
 def update_centroids(data,centroid_assign, k):
     '''
     Update the centroids
@@ -98,6 +102,7 @@ def update_centroids(data,centroid_assign, k):
         # print ("cluster :", np.array(cluster))
         centroids.append(np.array(cluster).mean(axis=0))
     return pd.DataFrame(centroids, columns=data.columns)
+
 
 fig, axs = plt.subplots(2, 2)
 plt.subplots(2, 2)
