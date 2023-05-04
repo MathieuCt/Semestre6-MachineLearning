@@ -1,6 +1,15 @@
-# The goal of the part 2 is to implement the Kmeans from scratch.
+# Machine Learning TP2
 
-import seaborn as sns
+# Rappeler le principe de l’algorithme Kmeans :
+'''
+1. Choisir le nombre de clusters k
+2. Choisir k points comme centres de clusters
+3. Assigner chaque point au cluster le plus proche
+4. Recalculer les centres des clusters
+'''
+
+# The goal of this part is to implement the Kmeans from scratch.
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -34,7 +43,7 @@ data2 = data[0]
 data2 = np.append(data2, data[1].reshape(100, 1), axis=1)
 dfB = pd.DataFrame(data[0], columns=['x', 'y'])
 # Display data frame
-#print(dfB)
+# print(dfB)
 
 def DistEucl(M,Tab):
     '''
@@ -86,12 +95,9 @@ def update_centroids(data,centroid_assign, k):
             if centroid_assign[j] == i:
                 cluster.append(data.iloc[j,:2])
         # Compute the mean of the points
-        print ("cluster :", np.array(cluster))
+        # print ("cluster :", np.array(cluster))
         centroids.append(np.array(cluster).mean(axis=0))
-        print("column name :", centroids)
-        print("column name :", data.columns[0])
-        print("column name :", data.columns[1])
-    return pd.DataFrame(centroids,columns = data.columns)
+    return pd.DataFrame(centroids, columns=data.columns)
 
 fig, axs = plt.subplots(2, 2)
 plt.subplots(2, 2)
@@ -104,8 +110,8 @@ centroid_assignA, centroid_distanceA = assign_centroid(dfA, centroidsA)
 centroid_assignB, centroid_distanceB = assign_centroid(dfB, centroidsB)
 
 # Display the results in a plot
-axs[0,0].scatter(dfA['ApplicantIncome'], dfA['LoanAmount'], c=centroid_assignA)
-axs[0,1].scatter(dfB['x'], dfB['y'], c=centroid_assignB)
+axs[0, 0].scatter(dfA['ApplicantIncome'], dfA['LoanAmount'], c=centroid_assignA)
+axs[0, 1].scatter(dfB['x'], dfB['y'], c=centroid_assignB)
 
 # Update the centroids
 centroidsA = update_centroids(dfA,centroid_assignA, 3)
@@ -117,56 +123,61 @@ axs[1,0].scatter(dfA['ApplicantIncome'], dfA['LoanAmount'], c=centroid_assignA)
 axs[1,1].scatter(dfB['x'], dfB['y'], c=centroid_assignB)
 plt.show()
 
-def ComputeInertieW(data,centroids,cluster):
-    '''
-    Compute the intra-cluster inertia
-    '''
-    # Select the points that belong to the cluster
-    cluster = data[cluster]
-    # Compute the distance between each point and the centroid
-    dist = DistEucl(cluster, centroids)
-    # Compute the sum of the distances
-    sum = np.sum(dist)
-    return sum
 
-def MyKmeans(data, k=3, max_iter=10, tol=0.001, verbose=True) :
-    '''
+def ComputeInertieW(data, centroids, cluster):
+    """
+    Compute the intra-cluster inertia
+    """
+    # Inertie Totale = Inertie Inter-classe + Inertie Intra-classe
+    inertieTotale = 0
+    for i in range(len(centroids)):
+        # Inertie Intra-classe
+        inertieInter = 0
+        for j in range(len(cluster)):
+            if cluster[j] == i:
+                inertieInter += np.sum(np.square(np.subtract(data.iloc[j, :2].values, centroids.iloc[i, :2].values)))
+        inertieTotale += inertieInter
+    # Calcule du centre de gravité
+    G = data.mean(axis=0)
+    # Inertie Inter-classe
+    inertieInter = 0
+    for i in range(len(centroids)):
+        inertieInter += len(cluster[cluster == i].shape) * np.sum(np.square(np.subtract(centroids.iloc[i, :2].values, G.values)))
+    inertieTotale += inertieInter
+    return inertieTotale
+
+
+def MyKmeans(data, k):
+    """
     Implement the Kmeans algorithm
-    '''
+    """
+    maxIter = 6
     # Initialize the centroids
     centroids = Initialize_centroids(k, data)
     # Assign the closest centroid to each point
     centroid_assign, centroid_distance = assign_centroid(data, centroids)
     # Compute the inertia
     inertia = ComputeInertieW(data, centroids, centroid_assign)
-    # Initialize the iteration counter
-    iter = 0
-    # Initialize the difference between the inertia of two consecutive iterations
-    diff = tol + 1
-    # While the maximum number of iterations is not reached and the difference between the inertia of two consecutive iterations is greater than the tolerance
-    while iter < max_iter and diff > tol:
+    print("inertie " + "(0)" + " : " + str(inertia))
+    # Display the results
+    # init multiple plots
+    fig, axs = plt.subplots(int(maxIter/5) +1, 5)
+    axs[0, 0].scatter(data[data.columns[0]], data[data.columns[1]], c=centroid_assign)
+
+    # For the number of iterations
+    for i in range(1, maxIter):
         # Update the centroids
         centroids = update_centroids(data, centroid_assign, k)
         # Assign the closest centroid to each point
         centroid_assign, centroid_distance = assign_centroid(data, centroids)
         # Compute the inertia
-        inertia_new = ComputeInertieW(data, centroids, centroid_assign)
-        # Compute the difference between the inertia of two consecutive iterations
-        diff = inertia - inertia_new
-        # Update the inertia
-        inertia = inertia_new
-        # Update the iteration counter
-        iter += 1
-        # Display the results
-        if verbose:
-            print("Iteration : ", iter)
-            print("Inertia : ", inertia)
-            print("Difference : ", diff)
-            print("Centroids : ", centroids)
-            print("Centroid assign : ", centroid_assign)
-            print("Centroid distance : ", centroid_distance)
-            print("")
+        inertia = ComputeInertieW(data, centroids, centroid_assign)
+        print("inertie ", i, " : ", inertia)
+        # Add plot
+        n = int(i / 5)
+        p = i % 5
+        axs[n, p].scatter(data[data.columns[0]], data[data.columns[1]], c=centroid_assign)
+    plt.show()
 
-    return centroids, centroid_assign, centroid_distance
 
-MyKmeans(dfA, k=3, max_iter=10, tol=0.001, verbose=True)
+MyKmeans(dfA, 3)

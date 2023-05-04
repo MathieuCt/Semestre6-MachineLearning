@@ -1,0 +1,1 @@
+This is a manual implementation of Kmeans algorithm from scratch
